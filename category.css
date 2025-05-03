@@ -1,0 +1,20 @@
+@import url(https://fonts.googleapis.com/earlyaccess/droidarabickufi.css);
+.arabic-font{font-family: 'Droid Arabic Kufi', serif;}
+nav{
+    background-color: #1d3557;
+    color: white;
+    font-size: 1.1em;
+}
+.anchor{
+    text-decoration: none;
+    color: white;
+    padding: 5px;
+    
+}
+.news-cat{
+    color: gray;
+    font-weight: 1000;
+}
+.main{
+    font-weight: 1000;
+}
