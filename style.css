@@ -1,0 +1,94 @@
+@import url(https://fonts.googleapis.com/earlyaccess/droidarabickufi.css);
+.arabic-font{font-family: 'Droid Arabic Kufi', serif;}
+*{
+    font-family: ;
+}
+nav{
+    /* height: 100px; */
+    background-color: #1d3557;
+    color: white;
+    font-size: 1.1em;
+}
+.anchor{
+    text-decoration: none;
+    color: white;
+    padding: 5px;
+    
+}
+.navy{
+    background-color:  #1d3557;
+}
+
+.main{
+    font-weight: 1000;
+}
+.colorbox{
+    color: aliceblue;
+    height: 300px  ;
+    background-color: #1d3557;
+}
+.news-cat{
+    color: gray;
+}
+.more{
+    height: 100px;
+}
+.mostread{
+    font-size: small;
+    font-weight: 700;
+    border-bottom: solid 3px grey;
+}
+.morenews>small{
+    color: grey;
+    font-weight: bold;
+}
+.morenews>p{
+    font-size: 1.15em;
+    font-weight: bold;
+}
+footer{
+    background-color: rgb(1, 1, 1,0.05);
+    border-top: #1d3557 rgb(1, 1, 1) 2px;
+}
+li{
+    list-style-type: none;
+}
+
+/* From Uiverse.io by MarcLazz */ 
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  .button {
+    cursor: pointer;
+    text-decoration: none;
+    color: #ffff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #2d2e32;
+    border: 2px solid #2d2e32;
+    transition: all 0.45s;
+  }
+  
+  .button:hover {
+    transform: rotate(360deg);
+    transform-origin: center center;
+    background-color: #ffff;
+    color: #2d2e32;
+  }
+  
+  .button:hover .btn-svg {
+    filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(305deg)
+      brightness(103%) contrast(103%);
+  }
+  
+  .flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
