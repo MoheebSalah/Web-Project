@@ -1,4 +1,5 @@
 <?php
+session_start();
 include 'db_connect.php';
 
 // استعلام للخبر المميز
@@ -77,30 +78,41 @@ $categories = [
 <body class="arabic-font">
     <!-- النافبار -->
     <nav class="row p-4">
-        <div class="container col-md-10">
-            <div class="row">
-                <div class="col-md-4">
-                    <img class="col-md-4" src="https://shasha.ps/storage/2024/05/09/logo.png" alt="">
-                    <a class="anchor" href="frontPage.php">الرئيسية</a>
-                    <a class="anchor" href="category.php?id=1">سياسة</a>
-                    <a class="anchor" href="category.php?id=2">اقتصاد</a>
-                    <a class="anchor" href="category.php?id=3">رياضة</a>
-                    <a class="anchor" href="category.php?id=4">صحة</a>
-                </div>
-                <div class="col-md-5">
-                </div>
-                <div class="row col-md-3">
-                    <div class="col-md-8 p-2">
+    <div class="container col-md-10">
+        <div class="row">
+            <div class="col-md-4">
+                <img class="col-md-4" src="https://shasha.ps/storage/2024/05/09/logo.png" alt="">
+                <a class="anchor" href="frontPage.php">الرئيسية</a>
+                <a class="anchor" href="category.php?id=1">سياسة</a>
+                <a class="anchor" href="category.php?id=2">اقتصاد</a>
+                <a class="anchor" href="category.php?id=3">رياضة</a>
+                <a class="anchor" href="category.php?id=4">صحة</a>
+            </div>
+            <div class="col-md-2">
+            </div>
+            <div class="col-md-6">
+                <div class="row">                    
+                    <div class="col-md-4 p-2">
                         <input class="col-md-12" type="search" name="" id="" placeholder="ادخل كلمة البحث" style="border-radius: 5px; border: 0px;">
                     </div>
                     <div class="col-md-2">
                         <span class="col-md-8">الخليل</span>
-                        <img class="col-md-12" src="Assets/image.png" alt="">
+                        <img class="col-md-6" src="Assets/image.png" alt="">
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <?php if (isset($_SESSION['user_id']) && isset($_SESSION['user_role'])) { ?>
+                            <span>مرحبًا، <?php echo htmlspecialchars($_SESSION['user_name']); ?> | </span>
+                            <a class="anchor" href="<?php echo $_SESSION['user_role']; ?>_dashboard.php">لوحة التحكم</a> |
+                            <a class="anchor" href="logout.php">تسجيل الخروج</a>
+                        <?php } else { ?>
+                            <a class="anchor" href="login.php">تسجيل الدخول</a>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
 
     <!-- الخبر المميز -->
     <div class="row">
