@@ -11,6 +11,11 @@ nav{
     padding: 5px;
     
 }
+.fanchor{
+    text-decoration: none;
+    color: black;
+    padding: 5px;
+}
 .navy{
     background-color:  #1d3557;
 }
@@ -58,7 +63,7 @@ li{
     gap: 1.5rem;
   }
   
-  .btn {
+  .button{
     cursor: pointer;
     text-decoration: none;
     color: #ffff;
@@ -70,14 +75,14 @@ li{
     transition: all 0.45s;
   }
   
-  .btn:hover {
+  .button:hover {
     transform: rotate(360deg);
     transform-origin: center center;
     background-color: #ffff;
     color: #2d2e32;
   }
   
-  .btn:hover .btn-svg {
+  .button:hover .btn-svg {
     filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(305deg)
       brightness(103%) contrast(103%);
   }

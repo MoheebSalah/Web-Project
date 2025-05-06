@@ -45,7 +45,7 @@ $related_news_result = mysqli_query($conn, $related_news_query);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="category.css">
+    <link rel="stylesheet" href="frontPage.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
     <title><?php echo htmlspecialchars($news['title']); ?> - Shasha</title>
@@ -158,17 +158,17 @@ $related_news_result = mysqli_query($conn, $related_news_query);
                 <div class="col-md-3">
                     <ul>
                         <li style="font-size: 1.1em; font-weight: bold;">روابط</li>
-                        <li><a class="anchor" href="category.php?id=1">سياسة</a></li>
-                        <li><a class="anchor" href="category.php?id=2">اقتصاد</a></li>
-                        <li><a class="anchor" href="#">فن وثقافة</a></li>
-                        <li><a class="anchor" href="category.php?id=3">رياضة</a></li>
+                        <li><a class="fanchor" href="category.php?id=1">سياسة</a></li>
+                        <li><a class="fanchor" href="category.php?id=2">اقتصاد</a></li>
+                        <li><a class="fanchor" href="#">فن وثقافة</a></li>
+                        <li><a class="fanchor" href="category.php?id=3">رياضة</a></li>
                     </ul>
                 </div>
                 <div class="col-md-3">
                     <ul>
                         <li style="font-size: 1.1em; font-weight: bold;">عن الموقع</li>
-                        <li><a class="anchor" href="#">من نحن</a></li>
-                        <li><a class="anchor" href="#">اعلن معنا</a></li>
+                        <li><a class="fanchor" href="#">من نحن</a></li>
+                        <li><a class="fanchor" href="#">اعلن معنا</a></li>
                     </ul>
                 </div>
                 <div class="col-md-2">
