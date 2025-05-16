@@ -99,15 +99,6 @@ $categories = [
                         <span class="col-md-8">الخليل</span>
                         <img class="col-md-6" src="Assets/image.png" alt="">
                     </div>
-                    <div class="col-md-4 text-end">
-                        <?php if (isset($_SESSION['user_id']) && isset($_SESSION['user_role'])) { ?>
-                            <span>مرحبًا، <?php echo htmlspecialchars($_SESSION['user_name']); ?> | </span>
-                            <a class="anchor" href="<?php echo $_SESSION['user_role']; ?>_dashboard.php">لوحة التحكم</a> |
-                            <a class="anchor" href="logout.php">تسجيل الخروج</a>
-                        <?php } else { ?>
-                            <a class="anchor" href="login.php">تسجيل الدخول</a>
-                        <?php } ?>
-                    </div>
                 </div>
             </div>
         </div>
