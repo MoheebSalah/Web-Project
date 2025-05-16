@@ -20,20 +20,51 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $body = mysqli_real_escape_string($conn, $_POST['body']);
     $category_id = intval($_POST['category_id']);
     $keywords = mysqli_real_escape_string($conn, $_POST['keywords']);
-    $image = 'https://picsum.photos/300/200'; // صورة افتراضية
     $dateposted = date('Y-m-d H:i:s');
     $status = $_SESSION['user_role'] == 'admin' ? 'approved' : 'pending';
+
+    // التحقق من الصورة
+    $image_path = '';
+    if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
+        $allowed_types = ['image/jpeg', 'image/png', 'image/jpg'];
+        $max_size = 2 * 1024 * 1024; // 2 ميجا
+        $file_type = $_FILES['image']['type'];
+        $file_size = $_FILES['image']['size'];
+        $file_tmp = $_FILES['image']['tmp_name'];
+        $file_name = uniqid() . '_' . basename($_FILES['image']['name']);
+        $upload_dir = 'uploads/';
+        $image_path = $upload_dir . $file_name;
+
+        // التحقق من نوع الملف وحجمه
+        if (!in_array($file_type, $allowed_types)) {
+            $error = "نوع الملف غير مدعوم. يرجى رفع صورة بصيغة JPG أو PNG.";
+        } elseif ($file_size > $max_size) {
+            $error = "حجم الصورة كبير جدًا. الحد الأقصى 2 ميجا.";
+        } else {
+            // نقل الصورة لمجلد Uploads
+            if (!move_uploaded_file($file_tmp, $image_path)) {
+                $error = "حدث خطأ أثناء رفع الصورة.";
+            }
+        }
+    } else {
+        $error = "يرجى رفع صورة للخبر.";
+    }
 
     // التحقق من الحقول
     if (empty($title) || empty($body) || $category_id <= 0) {
         $error = "يرجى ملء جميع الحقول المطلوبة.";
-    } else {
+    } elseif (!$error) {
+        // إضافة الخبر لقاعدة البيانات
         $query = "INSERT INTO news (title, body, image, dateposted, category_id, author_id, status, keywords) 
-                  VALUES ('$title', '$body', '$image', '$dateposted', $category_id, $user_id, '$status', '$keywords')";
+                  VALUES ('$title', '$body', '$image_path', '$dateposted', $category_id, $user_id, '$status', '$keywords')";
         if (mysqli_query($conn, $query)) {
             $success = "تم إضافة الخبر بنجاح.";
         } else {
             $error = "حدث خطأ أثناء إضافة الخبر: " . mysqli_error($conn);
+            // حذف الصورة إذا فشلت الإضافة
+            if (file_exists($image_path)) {
+                unlink($image_path);
+            }
         }
     }
 }
@@ -74,27 +105,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <?php if ($success) { ?>
             <div class="alert alert-success"><?php echo $success; ?></div>
         <?php } ?>
-        <form method="POST" action="">
+        <form method="POST" action="" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="title" class="form-label">عنوان الخبر</label>
-                <input type="text" class="form-control" id="title" name="title" required>
+                <input type="text" class="form-control" id="title" name="title" value="<?php echo isset($_POST['title']) ? htmlspecialchars($_POST['title']) : ''; ?>" required>
             </div>
             <div class="mb-3">
                 <label for="body" class="form-label">محتوى الخبر</label>
-                <textarea class="form-control" id="body" name="body" rows="10" required></textarea>
+                <textarea class="form-control" id="body" name="body" rows="10" required><?php echo isset($_POST['body']) ? htmlspecialchars($_POST['body']) : ''; ?></textarea>
             </div>
             <div class="mb-3">
                 <label for="category_id" class="form-label">التصنيف</label>
-                <select class="form-control" id "category_id" name="category_id" required>
+                <select class="form-control" id="category_id" name="category_id" required>
                     <option value="">اختر تصنيفًا</option>
                     <?php while ($cat = mysqli_fetch_assoc($cat_result)) { ?>
-                        <option value="<?php echo $cat['id']; ?>"><?php echo htmlspecialchars($cat['name']); ?></option>
+                        <option value="<?php echo $cat['id']; ?>" <?php echo isset($_POST['category_id']) && $_POST['category_id'] == $cat['id'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($cat['name']); ?></option>
                     <?php } ?>
                 </select>
             </div>
             <div class="mb-3">
                 <label for="keywords" class="form-label">الكلمات المفتاحية</label>
-                <input type="text" class="form-control" id="keywords" name="keywords">
+                <input type="text" class="form-control" id="keywords" name="keywords" value="<?php echo isset($_POST['keywords']) ? htmlspecialchars($_POST['keywords']) : ''; ?>">
+            </div>
+            <div class="mb-3">
+                <label for="image" class="form-label">صورة الخبر</label>
+                <input type="file" class="form-control" id="image" name="image" accept="image/jpeg,image/png,image/jpg" required>
             </div>
             <button type="submit" class="btn btn-primary">إضافة الخبر</button>
         </form>

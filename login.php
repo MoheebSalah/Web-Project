@@ -14,20 +14,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user = mysqli_fetch_assoc($result);
 
     if ($user && password_verify($password, $user['password'])) {
-        // بدء الجلسة
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['user_role'] = $user['role'];
-        $_SESSION['user_name'] = $user['name'];
+        // التحقق من الدور
+        if (in_array($user['role'], ['author', 'editor', 'admin'])) {
+            // بدء الجلسة
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_role'] = $user['role'];
+            $_SESSION['user_name'] = $user['name'];
 
-        // توجيه المستخدم بناءً على دوره
-        if ($user['role'] == 'author') {
-            header("Location: author_dashboard.php");
-        } elseif ($user['role'] == 'editor') {
-            header("Location: editor_dashboard.php");
-        } elseif ($user['role'] == 'admin') {
-            header("Location: admin_dashboard.php");
+            // توجيه المستخدم بناءً على دوره
+            if ($user['role'] == 'author') {
+                header("Location: author_dashboard.php");
+            } elseif ($user['role'] == 'editor') {
+                header("Location: editor_dashboard.php");
+            } elseif ($user['role'] == 'admin') {
+                header("Location: admin_dashboard.php");
+            }
+            exit();
+        } else {
+            $error = "دور المستخدم غير صالح.";
         }
-        exit();
     } else {
         $error = "الإيميل أو كلمة المرور غير صحيحة.";
     }
@@ -53,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <form method="POST" action="">
             <div class="mb-3">
                 <label for="email" class="form-label">الإيميل</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+                <input type="email" class="form-control" id="email" name="email" value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>" required>
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">كلمة المرور</label>

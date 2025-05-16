@@ -37,6 +37,37 @@ $related_news_query = "SELECT n.id, n.title, c.name AS category_name
                        WHERE n.status = 'approved' AND n.id != $news_id 
                        ORDER BY n.dateposted DESC LIMIT 3";
 $related_news_result = mysqli_query($conn, $related_news_query);
+
+// التعامل مع إضافة تعليق
+$error = '';
+$success = '';
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $commenter_name = trim($_POST['commenter_name']);
+    $comment_text = trim($_POST['comment_text']);
+
+    if (empty($commenter_name) || empty($comment_text)) {
+        $error = "يرجى ملء جميع الحقول.";
+    } else {
+        $commenter_name = mysqli_real_escape_string($conn, $commenter_name);
+        $comment_text = mysqli_real_escape_string($conn, $comment_text);
+        $created_at = date('Y-m-d H:i:s');
+
+        $query = "INSERT INTO comments (news_id, commenter_name, comment_text, created_at)
+                  VALUES ($news_id, '$commenter_name', '$comment_text', '$created_at')";
+        if (mysqli_query($conn, $query)) {
+            $success = "تم إضافة التعليق بنجاح.";
+        } else {
+            $error = "حدث خطأ أثناء إضافة التعليق: " . mysqli_error($conn);
+        }
+    }
+}
+
+// جلب التعليقات
+$comment_query = "SELECT commenter_name, comment_text, created_at 
+                 FROM comments 
+                 WHERE news_id = $news_id 
+                 ORDER BY created_at DESC";
+$comment_result = mysqli_query($conn, $comment_query);
 ?>
 
 <!DOCTYPE html>
@@ -118,9 +149,7 @@ $related_news_result = mysqli_query($conn, $related_news_query);
                         <div class="mb-3">
                             <h3 class="fw-bold border-bottom border-3 border-primary pb-2" style="width: fit-content;">موضوعات ذات صلة</h3>
                         </div>
-                        
                         <div class="border-bottom border-2 mb-4" style="border-color: rgba(1, 1, 1, 0.3) !important;"></div>
-                        
                         <?php while ($related_news = mysqli_fetch_assoc($related_news_result)) { ?>
                             <div class="row mb-4 align-items-center">
                                 <div class="col-md-4 col-sm-12 mb-3 mb-md-0">
@@ -143,6 +172,46 @@ $related_news_result = mysqli_query($conn, $related_news_query);
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- قسم التعليقات -->
+    <div class="container col-md-10 mt-5">
+        <h3 class="fw-bold border-bottom border-3 border-primary pb-2" style="width: fit-content;">التعليقات</h3>
+        <?php if ($error) { ?>
+            <div class="alert alert-danger"><?php echo $error; ?></div>
+        <?php } ?>
+        <?php if ($success) { ?>
+            <div class="alert alert-success"><?php echo $success; ?></div>
+        <?php } ?>
+        <!-- نموذج إضافة تعليق -->
+        <form method="POST" action="" class="mt-4">
+            <div class="mb-3">
+                <label for="commenter_name" class="form-label">الاسم</label>
+                <input type="text" class="form-control" id="commenter_name" name="commenter_name" value="<?php echo isset($_POST['commenter_name']) ? htmlspecialchars($_POST['commenter_name']) : ''; ?>" required>
+            </div>
+            <div class="mb-3">
+                <label for="comment_text" class="form-label">التعليق</label>
+                <textarea class="form-control" id="comment_text" name="comment_text" rows="4" required><?php echo isset($_POST['comment_text']) ? htmlspecialchars($_POST['comment_text']) : ''; ?></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">إضافة تعليق</button>
+        </form>
+
+        <!-- عرض التعليقات -->
+        <div class="mt-4">
+            <?php if (mysqli_num_rows($comment_result) == 0) { ?>
+                <p>لا توجد تعليقات بعد.</p>
+            <?php } else { ?>
+                <?php while ($comment = mysqli_fetch_assoc($comment_result)) { ?>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title"><?php echo htmlspecialchars($comment['commenter_name']); ?></h5>
+                            <p class="card-text"><?php echo nl2br(htmlspecialchars($comment['comment_text'])); ?></p>
+                            <p class="card-text"><small class="text-muted"><?php echo date('d F Y, H:i', strtotime($comment['created_at'])); ?></small></p>
+                        </div>
+                    </div>
+                <?php } ?>
+            <?php } ?>
         </div>
     </div>
 
@@ -232,7 +301,7 @@ $related_news_result = mysqli_query($conn, $related_news_query);
                                     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                                         <g id="Dribbble-Light-Preview" transform="translate(-300.000000, -7442.000000)" fill="#fff">
                                             <g id="icons" transform="translate(56.000000, 160.000000)">
-                                                <path d="M251.988432,7291.58588 L251.988432,7285.97425 C253.980638,7286.91168 255.523602,7287.8172 257.348463,7288.79353 C255.843351,7289.62824 253.980638,7290.56468 251.988432,7291.58588 M263.090998,7283.18289 C262.747343,7282.73013 262.161634,7282.37809 261.538073,7282.26141 C259.705243,7281.91336 248.270974,7281.91237 246.439141,7282.26141 C245.939097,7282.35515 245.493839,7282.58153 245.111335,7282.93357 C243.49964,7284.42947 244.004664,7292.45151 244.393145,7293.75096 C244.556505,7294.31342 244.767679,7294.71931 245.033639,7294.98558 C245.376298,7295.33761 245.845463,7295.57995 246.384355,7295.68865 C247.893451,7296.0008 255.668037,7296.17532 261.506198,7295.73552 C262.044094,7295.64178 262.520231,7295.39147 262.895762,7295.02447 C264.385932,7293.53455 264.28433,7285.06174 263.090998,7283.18289" id="youtube-[#fff168]"></path>
+                                                <path d="M251.988432,7291.58588 L251.988432,7285.97425 C253.980638,7286.91168 255.523602,7287.8172 257.348463,7288.79353 C255.843351,7289.62824 253.980638,7290.56468 251.988432,7291.58588 M263.090998,7283.18289 C262.747343,7282.73013 262.161634,7282.37809 261.538073,7282.26141 C259.705243,7281.91336 248.270974,7281.91237 246.439141,7282.26141 C245.939097,7282.35515 245.493839,7282.58153 245.111335,7282.93357 C243.49964,7284.42947 244.004664,7292.45151 244.393145,7293.75096 C244.556505,7294.31342 244.767679,7294.71931 245.033639,7294.98558 C245.376298,7295.33761 245.845463,7295.57995 246.384355,7295.68865 C247.893451,7296.0008 255.668037,7296.17532 261.506198,7295.73552 C262.044094,7295.64178 262.520231,7295.39147 262.895762,7295.02447 C264.385932,7293.53455 264.28433,7295.73552 C262.044094,7295.64178 262.520231,7295.39147 262.895762,7295.02447 C264.385932,7293.53455 264.28433,7285.06174 263.090998,7283.18289" id="youtube-[#fff168]"></path>
                                             </g>
                                         </g>
                                     </g>
