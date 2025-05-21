@@ -1,7 +1,7 @@
 <?php
 include 'db_connect.php';
 
-if (isset($_GET['news_id']) && is_numeric($_GET['news_id'])) {
+if (isset($_GET['news_id']) ) {
     $news_id = (int) $_GET['news_id'];
 
     $query = "SELECT commenter_name, comment_text, created_at 
@@ -15,7 +15,7 @@ if (isset($_GET['news_id']) && is_numeric($_GET['news_id'])) {
 
     while ($comment = mysqli_fetch_assoc($result)) {
         $name = htmlspecialchars($comment['commenter_name']);
-        $text = nl2br(htmlspecialchars($comment['comment_text']));
+        $text = htmlspecialchars($comment['comment_text']);
         $date = date('d F Y, H:i', strtotime($comment['created_at']));
 
         $comments_html .= "
