@@ -9,7 +9,6 @@ if ($_SESSION['user_role'] != 'author') {
 
 $user_id = $_SESSION['user_id'];
 
-// جلب أخبار المؤلف
 $query = "SELECT n.id, n.title, n.dateposted, n.status, c.name AS category_name 
           FROM news n 
           JOIN category c ON n.category_id = c.id 

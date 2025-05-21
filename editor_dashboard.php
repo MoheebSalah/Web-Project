@@ -5,9 +5,8 @@ if ($_SESSION['user_role'] != 'editor') {
     header("Location: frontpage.php");
     exit();
 }
-// معالجة إجراءات المحرر
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $news_id = intval($_POST['news_id']);
+    $news_id = ($_POST['news_id']);
     $action = $_POST['action'];
 
     if ($action == 'approve') {
@@ -23,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
 }
 
-// جلب كل الأخبار
 $query = "SELECT n.id, n.title, n.dateposted, n.status, c.name AS category_name, u.name AS author_name 
           FROM news n 
           JOIN category c ON n.category_id = c.id 

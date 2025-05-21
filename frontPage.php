@@ -2,7 +2,6 @@
 session_start();
 include 'db_connect.php';
 
-// استعلام للخبر المميز
 $query = "SELECT n.id, n.title, n.body, c.name AS category_name 
           FROM news n 
           JOIN category c ON n.category_id = c.id 
@@ -11,7 +10,6 @@ $query = "SELECT n.id, n.title, n.body, c.name AS category_name
 $featured_result = mysqli_query($conn, $query);
 $featured_news = mysqli_fetch_assoc($featured_result);
 
-// استعلام للشبكة
 $grid_query = "SELECT n.id, n.title, c.name AS category_name 
                FROM news n 
                JOIN category c ON n.category_id = c.id 
@@ -19,14 +17,12 @@ $grid_query = "SELECT n.id, n.title, c.name AS category_name
                ORDER BY n.dateposted DESC LIMIT 4 OFFSET 1";
 $grid_result = mysqli_query($conn, $grid_query);
 
-// استعلام للأكثر قراءة
 $most_read_query = "SELECT n.id, n.title 
                     FROM news n 
                     WHERE n.status = 'approved' 
                     ORDER BY n.views DESC LIMIT 5";
 $most_read_result = mysqli_query($conn, $most_read_query);
 
-// استعلام للمزيد من الأخبار
 $more_news_query = "SELECT n.id, n.title, c.name AS category_name 
                     FROM news n 
                     JOIN category c ON n.category_id = c.id 
@@ -38,7 +34,6 @@ while ($row = mysqli_fetch_assoc($more_news_result)) {
     $more_news[] = $row;
 }
 
-// استعلامات لأقسام التصنيفات
 $categories = [
     1 => ['name' => 'سياسة', 'query' => "SELECT n.id, n.title, n.body, c.name AS category_name 
                                         FROM news n 
@@ -76,7 +71,6 @@ $categories = [
 </head>
 
 <body class="arabic-font">
-    <!-- النافبار -->
     <nav class="row p-4">
     <div class="container col-md-10">
         <div class="row">
@@ -105,7 +99,6 @@ $categories = [
     </div>
 </nav>
 
-    <!-- الخبر المميز -->
     <div class="row">
         <div class="container col-md-10">
             <div class="row">
@@ -122,7 +115,6 @@ $categories = [
                     <?php } ?>
                 </div>
 
-                <!-- الشبكة -->
                 <div class="row col-md-7 mt-5">
                     <?php while ($news = mysqli_fetch_assoc($grid_result)) { ?>
                         <div class="col-md-6 mb-3">
@@ -138,11 +130,9 @@ $categories = [
         </div>
     </div>
 
-    <!-- الأكثر قراءة والمزيد من الأخبار -->
     <div class="row mt-5">
         <div class="container col-md-10">
             <div class="row">
-                <!-- الأكثر قراءة -->
                 <div class="col-md-3">
                     <div class="mostread mt-4 p-2" style="border-bottom: solid rgb(1,1,1,0.2) 3px;">
                         <h3 style="font-weight: 700; border-bottom: solid #1d3557; width: fit-content;">الأكثر قراءة</h3>
@@ -153,7 +143,6 @@ $categories = [
                         </div>
                     <?php } ?>
                 </div>
-                <!-- المزيد من الأخبار -->
                 <div class="col-md-9">
                     <div class="mostread mt-4 p-2" style="border-bottom: solid rgb(1,1,1,0.2) 3px;">
                         <h3 style="font-weight: 700; border-bottom: solid #1d3557; width: fit-content;">المزيد من الأخبار</h3>
@@ -196,7 +185,6 @@ $categories = [
         </div>
     </div>
 
-    <!-- أقسام التصنيفات -->
     <?php foreach ($categories as $cat_id => $category) { ?>
         <div class="row">
             <div class="container col-md-10 main mt-5">
@@ -255,7 +243,7 @@ $categories = [
                         <li style="font-size: 1.1em; font-weight: bold;">روابط</li>
                         <li><a class="fanchor" href="category.php?id=1">سياسة</a></li>
                         <li><a class="fanchor" href="category.php?id=2">اقتصاد</a></li>
-                        <li><a class="fanchor" href="#">فن وثقافة</a></li>
+                        <li><a class="fanchor" href="category.php?id=4">صحة</a></li>
                         <li><a class="fanchor" href="category.php?id=3">رياضة</a></li>
                     </ul>
                 </div>

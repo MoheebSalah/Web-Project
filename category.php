@@ -1,31 +1,27 @@
 <?php
 include 'db_connect.php';
 
-// التأكد من وجود id في الـ URL
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header("Location: frontPage.php");
     exit();
 }
 
-$category_id = intval($_GET['id']);
+$category_id = $_GET['id'];
 
-// جلب اسم التصنيف
 $cat_query = "SELECT name FROM category WHERE id = $category_id";
 $cat_result = mysqli_query($conn, $cat_query);
 $category = mysqli_fetch_assoc($cat_result);
 
-// إذا التصنيف مش موجود، نرجع للصفحة الرئيسية
 if (!$category) {
     header("Location: frontPage.php");
     exit();
 }
 
-// جلب الأخبار للتصنيف (6 أخبار كحد أقصى)
 $news_query = "SELECT n.id, n.title, n.body, c.name AS category_name 
                FROM news n 
                JOIN category c ON n.category_id = c.id 
                WHERE n.status = 'approved' AND n.category_id = $category_id 
-               ORDER BY n.dateposted DESC LIMIT 6";
+               ORDER BY n.dateposted DESC";
 $news_result = mysqli_query($conn, $news_query);
 $news_items = [];
 while ($row = mysqli_fetch_assoc($news_result)) {
@@ -45,11 +41,10 @@ while ($row = mysqli_fetch_assoc($news_result)) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
         crossorigin="anonymous"></script>
-    <title><?php echo htmlspecialchars($category['name']); ?> - Shasha</title>
+    <title><?php echo $category['name']; ?> - Shasha</title>
 </head>
 
 <body class="arabic-font">
-    <!-- النافبار -->
     <nav class="row p-4">
         <div class="container col-md-10">
             <div class="row">
@@ -77,7 +72,6 @@ while ($row = mysqli_fetch_assoc($news_result)) {
         </div>
     </nav>
 
-    <!-- أخبار التصنيف -->
     <div class="row">
         <div class="container col-md-10 main mt-4">
             <div class="row">
@@ -199,7 +193,6 @@ while ($row = mysqli_fetch_assoc($news_result)) {
         </div>
     </div>
 
-    <!-- الفوتر -->
     <footer class="row mt-4">
         <div class="container col-md-10">
             <div class="row p-4">
@@ -215,7 +208,7 @@ while ($row = mysqli_fetch_assoc($news_result)) {
                         <li style="font-size: 1.1em; font-weight: bold;">روابط</li>
                         <li><a class="fanchor" href="category.php?id=1">سياسة</a></li>
                         <li><a class="fanchor" href="category.php?id=2">اقتصاد</a></li>
-                        <li><a class="fanchor" href="#">فن وثقافة</a></li>
+                        <li><a class="fanchor" href="category.php?id=4">صحة</a></li>
                         <li><a class="fanchor" href="category.php?id=3">رياضة</a></li>
                     </ul>
                 </div>
