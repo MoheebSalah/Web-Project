@@ -191,8 +191,8 @@ $comment_result = mysqli_query($conn, $comment_query);
             </div>
             <button type="submit" class="btn btn-primary">إضافة تعليق</button>
         </form>
-
-        <div class="mt-4">
+            
+        <div class="mt-4" id="commentList">
             <?php if (mysqli_num_rows($comment_result) == 0) { ?>
                 <p>لا توجد تعليقات بعد.</p>
             <?php } else { ?>
@@ -208,6 +208,8 @@ $comment_result = mysqli_query($conn, $comment_query);
             <?php } ?>
         </div>
     </div>
+    
+
 
     <footer class="row mt-4">
         <div class="container col-md-10">
@@ -308,6 +310,31 @@ $comment_result = mysqli_query($conn, $comment_query);
         </div>
     </footer>
 
+    
+
 </body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+    const newsId = <?php echo $news_id; ?>;
+
+    function loadComments() {
+        $.ajax({
+            url: 'get_comments.php',
+            type: 'GET',
+            data: { news_id: newsId },
+            success: function (data) {
+                $('#commentList').html(data);
+            },
+            error: function () {
+                $('#commentList').html('<p class="text-danger">فشل تحميل التعليقات.</p>');
+            }
+        });
+    }
+
+    loadComments();
+    setInterval(loadComments, 3000);
+});
+</script>
 
 </html>
