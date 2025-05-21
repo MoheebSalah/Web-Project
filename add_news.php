@@ -11,57 +11,26 @@ $user_id = $_SESSION['user_id'];
 $error = '';
 $success = '';
 
-// جلب التصنيفات
 $cat_query = "SELECT id, name FROM category";
 $cat_result = mysqli_query($conn, $cat_query);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $title = mysqli_real_escape_string($conn, $_POST['title']);
     $body = mysqli_real_escape_string($conn, $_POST['body']);
-    $category_id = intval($_POST['category_id']);
+    $category_id = ($_POST['category_id']);
     $keywords = mysqli_real_escape_string($conn, $_POST['keywords']);
     $dateposted = date('Y-m-d H:i:s');
     $status = $_SESSION['user_role'] == 'admin' ? 'approved' : 'pending';
 
-    // التحقق من الصورة
-    $image_path = '';
-    if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
-        $allowed_types = ['image/jpeg', 'image/png', 'image/jpg'];
-        $max_size = 2 * 1024 * 1024; // 2 ميجا
-        $file_type = $_FILES['image']['type'];
-        $file_size = $_FILES['image']['size'];
-        $file_tmp = $_FILES['image']['tmp_name'];
-        $file_name = uniqid() . '_' . basename($_FILES['image']['name']);
-        $upload_dir = 'uploads/';
-        $image_path = $upload_dir . $file_name;
-
-        // التحقق من نوع الملف وحجمه
-        if (!in_array($file_type, $allowed_types)) {
-            $error = "نوع الملف غير مدعوم. يرجى رفع صورة بصيغة JPG أو PNG.";
-        } elseif ($file_size > $max_size) {
-            $error = "حجم الصورة كبير جدًا. الحد الأقصى 2 ميجا.";
-        } else {
-            // نقل الصورة لمجلد Uploads
-            if (!move_uploaded_file($file_tmp, $image_path)) {
-                $error = "حدث خطأ أثناء رفع الصورة.";
-            }
-        }
-    } else {
-        $error = "يرجى رفع صورة للخبر.";
-    }
-
-    // التحقق من الحقول
     if (empty($title) || empty($body) || $category_id <= 0) {
         $error = "يرجى ملء جميع الحقول المطلوبة.";
     } elseif (!$error) {
-        // إضافة الخبر لقاعدة البيانات
         $query = "INSERT INTO news (title, body, image, dateposted, category_id, author_id, status, keywords) 
                   VALUES ('$title', '$body', '$image_path', '$dateposted', $category_id, $user_id, '$status', '$keywords')";
         if (mysqli_query($conn, $query)) {
             $success = "تم إضافة الخبر بنجاح.";
         } else {
             $error = "حدث خطأ أثناء إضافة الخبر: " . mysqli_error($conn);
-            // حذف الصورة إذا فشلت الإضافة
             if (file_exists($image_path)) {
                 unlink($image_path);
             }
@@ -126,10 +95,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="mb-3">
                 <label for="keywords" class="form-label">الكلمات المفتاحية</label>
                 <input type="text" class="form-control" id="keywords" name="keywords" value="<?php echo isset($_POST['keywords']) ? htmlspecialchars($_POST['keywords']) : ''; ?>">
-            </div>
-            <div class="mb-3">
-                <label for="image" class="form-label">صورة الخبر</label>
-                <input type="file" class="form-control" id="image" name="image" accept="image/jpeg,image/png,image/jpg" required>
             </div>
             <button type="submit" class="btn btn-primary">إضافة الخبر</button>
         </form>

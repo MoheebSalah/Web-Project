@@ -6,12 +6,11 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     exit();
 }
 
-$news_id = intval($_GET['id']);
+$news_id = $_GET['id'];
 
-$query = "SELECT n.id, n.title, n.body, n.dateposted, n.views, n.keywords, n.category_id, c.name AS category_name, u.name AS author_name 
+$query = "SELECT n.id, n.title, n.body, n.dateposted, n.views, n.keywords, n.category_id, c.name AS category_name 
           FROM news n 
-          JOIN category c ON n.category_id = c.id 
-          JOIN user u ON n.author_id = u.id 
+          JOIN category c ON n.category_id = c.id
           WHERE n.id = $news_id AND n.status = 'approved'";
 $result = mysqli_query($conn, $query);
 $news = mysqli_fetch_assoc($result);
@@ -24,7 +23,7 @@ if (!$news) {
 $update_views = "UPDATE news SET views = views + 1 WHERE id = $news_id";
 mysqli_query($conn, $update_views);
 
-$category_id = isset($news['category_id']) ? intval($news['category_id']) : 1;
+$category_id = isset($news['category_id']) ? $news['category_id'] : 1;
 $more_news_query = "SELECT n.id, n.title 
                     FROM news n 
                     WHERE n.status = 'approved' AND n.category_id = $category_id AND n.id != $news_id 
@@ -38,7 +37,6 @@ $related_news_query = "SELECT n.id, n.title, c.name AS category_name
                        ORDER BY n.dateposted DESC LIMIT 3";
 $related_news_result = mysqli_query($conn, $related_news_query);
 
-// التعامل مع إضافة تعليق
 $error = '';
 $success = '';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -50,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         $commenter_name = mysqli_real_escape_string($conn, $commenter_name);
         $comment_text = mysqli_real_escape_string($conn, $comment_text);
-        $created_at = date('Y-m-d H:i:s');
+        $created_at = date('Y-m-d H:i');
 
         $query = "INSERT INTO comments (news_id, commenter_name, comment_text, created_at)
                   VALUES ($news_id, '$commenter_name', '$comment_text', '$created_at')";
@@ -62,7 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// جلب التعليقات
 $comment_query = "SELECT commenter_name, comment_text, created_at 
                  FROM comments 
                  WHERE news_id = $news_id 
@@ -79,7 +76,7 @@ $comment_result = mysqli_query($conn, $comment_query);
     <link rel="stylesheet" href="frontPage.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
-    <title><?php echo htmlspecialchars($news['title']); ?> - Shasha</title>
+    <title><?php echo ($news['title']); ?> - Shasha</title>
 </head>
 
 <body class="arabic-font">
@@ -147,7 +144,7 @@ $comment_result = mysqli_query($conn, $comment_query);
                     <p>AD</p>
                     <div class="container mt-5">
                         <div class="mb-3">
-                            <h3 class="fw-bold border-bottom border-3 border-primary pb-2" style="width: fit-content;">موضوعات ذات صلة</h3>
+                            <h3  style="font-weight: 700; border-bottom: solid #1d3557; width: fit-content;">موضوعات ذات صلة</h3>
                         </div>
                         <div class="border-bottom border-2 mb-4" style="border-color: rgba(1, 1, 1, 0.3) !important;"></div>
                         <?php while ($related_news = mysqli_fetch_assoc($related_news_result)) { ?>
@@ -175,7 +172,6 @@ $comment_result = mysqli_query($conn, $comment_query);
         </div>
     </div>
 
-    <!-- قسم التعليقات -->
     <div class="container col-md-10 mt-5">
         <h3 class="fw-bold border-bottom border-3 border-primary pb-2" style="width: fit-content;">التعليقات</h3>
         <?php if ($error) { ?>
@@ -184,7 +180,6 @@ $comment_result = mysqli_query($conn, $comment_query);
         <?php if ($success) { ?>
             <div class="alert alert-success"><?php echo $success; ?></div>
         <?php } ?>
-        <!-- نموذج إضافة تعليق -->
         <form method="POST" action="" class="mt-4">
             <div class="mb-3">
                 <label for="commenter_name" class="form-label">الاسم</label>
@@ -197,7 +192,6 @@ $comment_result = mysqli_query($conn, $comment_query);
             <button type="submit" class="btn btn-primary">إضافة تعليق</button>
         </form>
 
-        <!-- عرض التعليقات -->
         <div class="mt-4">
             <?php if (mysqli_num_rows($comment_result) == 0) { ?>
                 <p>لا توجد تعليقات بعد.</p>
@@ -229,7 +223,7 @@ $comment_result = mysqli_query($conn, $comment_query);
                         <li style="font-size: 1.1em; font-weight: bold;">روابط</li>
                         <li><a class="fanchor" href="category.php?id=1">سياسة</a></li>
                         <li><a class="fanchor" href="category.php?id=2">اقتصاد</a></li>
-                        <li><a class="fanchor" href="#">فن وثقافة</a></li>
+                        <li><a class="fanchor" href="category.php?id=4">صحة</a></li>
                         <li><a class="fanchor" href="category.php?id=3">رياضة</a></li>
                     </ul>
                 </div>

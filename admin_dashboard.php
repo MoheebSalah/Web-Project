@@ -9,11 +9,9 @@ if ($_SESSION['user_role'] != 'admin') {
 $error = '';
 $success = '';
 
-// جلب المستخدمين
 $user_query = "SELECT id, name, email, role FROM user ORDER BY id";
 $user_result = mysqli_query($conn, $user_query);
 
-// جلب الأخبار
 $news_query = "SELECT n.id, n.title, n.dateposted, n.status, c.name AS category_name, u.name AS author_name 
                FROM news n 
                JOIN category c ON n.category_id = c.id 
@@ -21,31 +19,25 @@ $news_query = "SELECT n.id, n.title, n.dateposted, n.status, c.name AS category_
                ORDER BY n.dateposted DESC";
 $news_result = mysqli_query($conn, $news_query);
 
-// معالجة إضافة مستخدم
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_user'])) {
     $name = mysqli_real_escape_string($conn, $_POST['name']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $role = $_POST['role'];
 
-    if (empty($name) || empty($email) || empty($_POST['password']) || !in_array($role, ['author', 'editor', 'admin'])) {
-        $error = "يرجى ملء جميع الحقول بشكل صحيح.";
+    $query = "INSERT INTO user (name, email, password, role) VALUES ('$name', '$email', '$password', '$role')";
+    if (mysqli_query($conn, $query)) {
+        $success = "تم إضافة المستخدم بنجاح.";
+        header("Location: admin_dashboard.php");
+        exit();
     } else {
-        $query = "INSERT INTO user (name, email, password, role) VALUES ('$name', '$email', '$password', '$role')";
-        if (mysqli_query($conn, $query)) {
-            $success = "تم إضافة المستخدم بنجاح.";
-            header("Location: admin_dashboard.php");
-            exit();
-        } else {
-            $error = "حدث خطأ: " . mysqli_error($conn);
-        }
-    }
+        $error = "حدث خطأ: " . mysqli_error($conn);
+    }    
 }
 
-// معالجة حذف مستخدم
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_user'])) {
-    $user_id = intval($_POST['user_id']);
-    if ($user_id != $_SESSION['user_id']) { // منع حذف المستخدم الحالي
+    $user_id = ($_POST['user_id']);
+    if ($user_id != $_SESSION['user_id']) { 
         $query = "DELETE FROM user WHERE id = $user_id";
         mysqli_query($conn, $query);
         header("Location: admin_dashboard.php");
